@@ -1,13 +1,22 @@
 import React, { useState } from 'react';
 import { formatISO, format, sub, differenceInMinutes } from 'date-fns';
-// import { initializeApp } from 'firebase/app';
-// import { getFirestore, collection, getDocs } from 'firebase/firestore/lite';
+import { initializeApp } from 'firebase/app';
+import { getFirestore, collection, getDocs } from 'firebase/firestore/lite';
 // import { getAuth, signInAnonymously } from 'firebase/auth';
 // import 'firebase/firestore';
 // import 'firebase/auth';
 import './App.css';
 // import { useAuthState } from 'react-firebase-hooks/auth';
 // import { useCollectionData } from 'react-firebase-hooks/firestore';
+
+const app = initializeApp({
+  apiKey: import.meta.env.FIREBASE_API_KEY,
+  authDomain: import.meta.env.FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.FIREBASE_APP_ID,
+});
 
 // const auth = getAuth();
 // signInAnonymously(auth)
@@ -20,14 +29,14 @@ import './App.css';
 //     // ...
 //   });
 
-// const db = getFirestore(app);
+const db = getFirestore(app);
 
-// async function getDays(db) {
-//   const daysCol = collection(db, 'days');
-//   const daySnapshot = await getDocs(daysCol);
-//   const dayList = daySnapshot.docs.map((doc) => doc.data());
-//   return dayList;
-// }
+async function getDays(db) {
+  const daysCol = collection(db, 'days');
+  const daySnapshot = await getDocs(daysCol);
+  const dayList = daySnapshot.docs.map((doc) => doc.data());
+  return dayList;
+}
 
 const MINUTES = 60;
 
@@ -104,13 +113,13 @@ function App() {
   const finalInMinutes = getMinutesFromTimeString(final);
   weekOvertime += finalInMinutes - 8 * MINUTES;
 
-  // React.useEffect(() => {
-  //   const func = async (): Promise<void> => {
-  //     const days = await getDays(db);
-  //     console.log(days);
-  //   };
-  //   void func();
-  // }, []);
+  React.useEffect(() => {
+    const func = async (): Promise<void> => {
+      const days = await getDays(db);
+      console.log(days);
+    };
+    void func();
+  }, []);
 
   const parseTimeFromString = (event: any) => {
     event.preventDefault();
