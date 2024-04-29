@@ -5,9 +5,9 @@ import dotenv from 'dotenv'
 dotenv.config({ path: process.env.ENV_FILE ?? '.env' })
 
 // https://vitejs.dev/config/
-export default ({mode}) => {
+export default ({ mode }) => {
   process.env = {...process.env, ...loadEnv(mode, process.cwd())};
   return defineConfig({
-  plugins: [react()],
-})
-}
+    plugins: [react()]
+  }); 
+};
