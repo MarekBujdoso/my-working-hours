@@ -151,6 +151,10 @@ async function getWeekHistoryFrom() {
 
 const dayDoc = (dayId: string) => doc(db, "days", dayId)
 
+const updateDay = async (dayId: string, data: WorkedTime): Promise<void> => {
+  return setDoc(dayDoc(dayId), data, { merge: true });
+}
+
 interface HistoryDay {
   id: string;
   date: string;
@@ -158,10 +162,12 @@ interface HistoryDay {
   overtime: number;
 }
 
-interface WorkingDay {
-  stringDate: string;
+interface WorkedTime {
   lastChange: Date;
   workedMinutes: number;
+}
+interface WorkingDay extends WorkedTime {
+  stringDate: string;
   id: string;
 }
 
@@ -194,14 +200,10 @@ function App() {
   });
 
   // const todaysTime = localStorage.getItem(`todays_time_${todayDate}`);
-  const lastStringDate = localStorage.getItem('todays_time_last_edit');
-  console.log(workingDay.lastChange)
   const lastEdit = format(workingDay.lastChange, " 'at' H:mm");
-  // const [final, setFinal] = useState('00:00');
   const todayWorked = React.useRef<HTMLInputElement>(null);
-  const hasWorkedEnough = React.useRef(false);
   // const finalInMinutes = workingDay.workedMinutes;
-  // weekOvertime += finalInMinutes - 8 * MINUTES;
+  const currentOvertime = weekOvertime + workingDay.workedMinutes - 8 * MINUTES;
 
   React.useEffect(() => {
     const func = async (): Promise<void> => {
@@ -226,13 +228,7 @@ function App() {
     event.preventDefault();
     const time = event.target.working_time.value;
     const timeInMinutes = getMinutesFromTimeString(time);
-    // const finalTimeInMinutes = getMinutesFromTimeString(final) + timeInMinutes;
     const finalTimeInMinutes = workingDay.workedMinutes + timeInMinutes;
-    hasWorkedEnough.current = finalTimeInMinutes >= 8 * MINUTES;
-    const finalFormatted = convertMinutesToTimeString(finalTimeInMinutes);
-    // setFinal(finalFormatted);
-    localStorage.setItem(`todays_time_${todayDate}`, finalFormatted);
-    localStorage.setItem('todays_time_last_edit', new Date().toString());
     if (todayWorked.current != null) {
       todayWorked.current.value = '';
     }
@@ -244,20 +240,21 @@ function App() {
       workedMinutes: finalTimeInMinutes,
     };
     setWorkingDay(newWorkday);
-    const res = await setDoc(dayDoc(workingDay.id), {lastChange: new Date(),
-      workedMinutes: finalTimeInMinutes,},{ merge: true }); // change to update
-    console.log(res);
+    updateDay(workingDay.id, {lastChange: new Date(),
+        workedMinutes: finalTimeInMinutes});
   };
 
   const tillNow = () => {
-    if (lastStringDate != null && todayWorked.current != null) {
-      const diff = differenceInMinutes(new Date(), new Date(lastStringDate));
+    if (todayWorked.current != null) {
+      const diff = differenceInMinutes(new Date(), workingDay.lastChange);
       todayWorked.current.value = convertMinutesToTimeString(diff);
     }
   };
 
   const setNow = () => {
-    localStorage.setItem('todays_time_last_edit', new Date().toString());
+    const { id, workedMinutes } = workingDay;
+    updateDay(id, {lastChange: new Date(), workedMinutes});
+    setWorkingDay({...workingDay, lastChange: new Date()});
   };
 
   return (
@@ -272,7 +269,7 @@ function App() {
             .map((day) => (
               <div className="time_item" key={day.id}>
                 {day.date}:{' '}
-                <i className={day.overtime > 0 ? 'time_ok' : 'time_not_good'}>
+                <i className={day.overtime >= 0 ? 'time_ok' : 'time_not_good'}>
                   {day.time
                     ? `${day.time} (${convertMinutesToTimeWithSign(
                         day.overtime
@@ -286,12 +283,12 @@ function App() {
           <div className="time_item top_border">
             Today:{' '}
             <i
-              className={hasWorkedEnough.current ? 'time_ok' : 'time_not_good'}
+              className={workingDay.workedMinutes >= MINUTES * 8 ? 'time_ok' : 'time_not_good'}
             >
-              {convertMinutesToTimeString(workingDay.workedMinutes ?? 0)}
+              {convertMinutesToTimeString(workingDay.workedMinutes)}
             </i>
-            <i className={weekOvertime >= 0 ? 'time_ok' : 'time_not_good'}>
-              {`(${convertMinutesToTimeWithSign(weekOvertime)}) ${lastEdit}`}
+            <i className={currentOvertime >= 0 ? 'time_ok' : 'time_not_good'}>
+              {`(${convertMinutesToTimeWithSign(currentOvertime)}) ${lastEdit}`}
             </i>
           </div>
         </div>
@@ -310,7 +307,10 @@ function App() {
             <button type="submit">+</button>
           </form>
         </div>
-        {/* <button onClick={() => setFinal('00:00')}>clear today</button> */}
+        <button onClick={() => {
+          updateDay(workingDay.id, { lastChange: new Date(), workedMinutes: 0})
+          setWorkingDay({...workingDay, workedMinutes: 0})
+        }}>clear today</button>
       </div>
     </>
   );
