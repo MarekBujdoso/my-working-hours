@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { formatISO, format, sub, differenceInMinutes } from 'date-fns';
 import { initializeApp } from 'firebase/app';
-import { getFirestore, collection, getDocs } from 'firebase/firestore/lite';
+import { getFirestore, collection, getDocs, addDoc, Firestore, doc, setDoc, where, query, Timestamp } from 'firebase/firestore/lite';
 // import { getAuth, signInAnonymously } from 'firebase/auth';
 // import 'firebase/firestore';
 // import 'firebase/auth';
@@ -18,6 +18,8 @@ const app = initializeApp({
   appId: import.meta.env.VITE_FIREBASE_APP_ID
 });
 
+const formatISODate = (date: Date) => formatISO(date, { representation: 'date' });
+
 // const auth = getAuth();
 // signInAnonymously(auth)
 //   .then(() => {
@@ -31,11 +33,38 @@ const app = initializeApp({
 
 const db = getFirestore(app);
 
-async function getDays(db) {
+async function getDays(db: Firestore): Promise<WorkingDay[]> {
   const daysCol = collection(db, 'days');
   const daySnapshot = await getDocs(daysCol);
-  const dayList = daySnapshot.docs.map((doc) => doc.data());
+  const dayList: WorkingDay[] = daySnapshot.docs.map((doc) => ({...doc.data(), id: doc.id} as WorkingDay));
   return dayList;
+}
+
+async function getToday(db: Firestore): Promise<WorkingDay> {
+  const daysCol = collection(db, 'days');
+  const daySnapshot = await getDocs(query(daysCol, where('stringDate', '==', formatISODate(new Date()))));
+  const stringToday = formatISODate(new Date());
+  const todaySnapshot = daySnapshot.docs.find((doc) => doc.data().stringDate === stringToday);
+  const today = todaySnapshot?.data() as WorkingDayDB | undefined;
+  const todayId = todaySnapshot?.id;
+  console.log(todayId);
+  if (today && todayId) {
+    return {
+      ...today,
+      lastChange: new Date(today.lastChange.seconds * 1000),
+      id: todayId,
+      };
+  } else {
+    const newWorkday = {
+      stringDate: stringToday,
+      lastChange: new Date(),
+      workedMinutes: 0,
+    };
+    
+    const docRef = await addDoc(daysCol, newWorkday);
+    console.log(docRef.id);
+    return {...newWorkday, id: docRef.id};
+  }
 }
 
 const MINUTES = 60;
@@ -67,73 +96,157 @@ function getMinutesFromTimeString(hoursFormat: string | null) {
   return Number(hours) * MINUTES + Number(minutes);
 }
 
-function getWeekHistoryFrom() {
+async function getWeekHistoryFrom() {
   let someDay = sub(new Date(), { days: 1 });
   let weekOvertime = 0;
-  const history = [];
+  const history: HistoryDay[] = [];
   while (format(someDay, 'ii') != '07') {
-    const storageName = `todays_time_${formatISO(someDay, {
-      representation: 'date',
-    })}`;
+    const someDayString = formatISODate(someDay);
+    console.log(someDayString);
+    // const storageName = `todays_time_${someDayString}`;
 
-    const historyTime = localStorage.getItem(storageName);
-    const workedMinutes = getMinutesFromTimeString(historyTime);
-    const overtime = workedMinutes != 0 ? workedMinutes - 8 * MINUTES : 0;
-    weekOvertime += overtime;
-    history.push({
-      id: crypto.randomUUID(),
-      date: formatISO(someDay, {
-        representation: 'date',
-      }),
-      time: historyTime,
-      overtime,
-    });
+    // const historyTime = localStorage.getItem(storageName);
+    // const workedMinutes = getMinutesFromTimeString(historyTime);
+    // const overtime = workedMinutes != 0 ? workedMinutes - 8 * MINUTES : 0;
+    // weekOvertime += overtime;
+    // history.push({
+    //   id: crypto.randomUUID(),
+    //   date: someDayString,
+    //   time: historyTime,
+    //   overtime,
+    // });
+    const savedWorkDays = await getDays(db);
+    const daysCol = collection(db, 'days');
+    const workingDay = savedWorkDays.find((day) => day.stringDate === someDayString);
+    if (workingDay != null) {
+      const overtime = workingDay.workedMinutes - 8 * MINUTES;
+      weekOvertime += overtime;
+      // read data
+      history.push({
+        id: workingDay.id,
+        date: workingDay.stringDate,
+        time: convertMinutesToTimeString(workingDay.workedMinutes),
+        overtime,
+      });
+    } else {
+      const newDate = {
+        stringDate: formatISODate(someDay),
+        lastChange: new Date(),
+        workedMinutes: 0,
+      }
+      const res = await addDoc(daysCol, newDate);
+      history.push({
+        id: res.id,
+        date: newDate.stringDate,
+        time: '00:00',
+        overtime: 0 - 8 * MINUTES,
+      });
+      console.log(res.id);
+    }
     someDay = sub(someDay, { days: 1 });
+
   }
   return { history, weekOvertime };
+}
+
+const dayDoc = (dayId: string) => doc(db, "days", dayId)
+
+interface HistoryDay {
+  id: string;
+  date: string;
+  time: string;
+  overtime: number;
+}
+
+interface WorkingDay {
+  stringDate: string;
+  lastChange: Date;
+  workedMinutes: number;
+  id: string;
+}
+
+interface WorkingDayDB {
+  stringDate: string;
+  lastChange: Timestamp;
+  workedMinutes: number;
+  id: string;
 }
 
 function App() {
   // const [user] = useAuthState(auth);
   const todayDate = React.useMemo(
-    () => formatISO(new Date(), { representation: 'date' }),
+    () => formatISODate(new Date()),
     []
   );
 
   // load last week
-  let { history, weekOvertime } = getWeekHistoryFrom();
+  const [weekHistory, setWeekHistory] = useState<HistoryDay[]>([]);
+  const [weekOvertime, setWeekOvertime] = useState(0);
+  const isEffectRunning = React.useRef(false);
+  // let { history, weekOvertime } = { history: [], weekOvertime: 0}
 
-  const todaysTime = localStorage.getItem(`todays_time_${todayDate}`);
+
+  const [workingDay, setWorkingDay] = useState<WorkingDay>({
+    stringDate: todayDate,
+    lastChange: new Date(),
+    workedMinutes: 0,
+    id: 'empty'
+  });
+
+  // const todaysTime = localStorage.getItem(`todays_time_${todayDate}`);
   const lastStringDate = localStorage.getItem('todays_time_last_edit');
-  const lastEdit =
-    lastStringDate != null ? format(lastStringDate, " 'at' H:mm") : '';
-  const [final, setFinal] = useState(todaysTime ?? '00:00');
+  console.log(workingDay.lastChange)
+  const lastEdit = format(workingDay.lastChange, " 'at' H:mm");
+  // const [final, setFinal] = useState('00:00');
   const todayWorked = React.useRef<HTMLInputElement>(null);
   const hasWorkedEnough = React.useRef(false);
-  const finalInMinutes = getMinutesFromTimeString(final);
-  weekOvertime += finalInMinutes - 8 * MINUTES;
+  // const finalInMinutes = workingDay.workedMinutes;
+  // weekOvertime += finalInMinutes - 8 * MINUTES;
 
   React.useEffect(() => {
     const func = async (): Promise<void> => {
-      const days = await getDays(db);
-      console.log(days);
+      const { history, weekOvertime } = await getWeekHistoryFrom();
+      setWeekHistory(history);
+      setWeekOvertime(weekOvertime);
+      // const days = await getDays(db);
+      // console.log(days);
+      const workDay = await getToday(db);
+      console.log("todayData", workDay);
+      setWorkingDay(workDay);
+      // setFinal(convertMinutesToTimeString(todayData.workedMinutes));
     };
-    void func();
+    if (!isEffectRunning.current) {
+      console.log('useEffect');
+      isEffectRunning.current = true;
+      void func();
+    }
   }, []);
 
-  const parseTimeFromString = (event: any) => {
+  const parseTimeFromString = async (event: any) => {
     event.preventDefault();
     const time = event.target.working_time.value;
     const timeInMinutes = getMinutesFromTimeString(time);
-    const finalTimeInMinutes = getMinutesFromTimeString(final) + timeInMinutes;
+    // const finalTimeInMinutes = getMinutesFromTimeString(final) + timeInMinutes;
+    const finalTimeInMinutes = workingDay.workedMinutes + timeInMinutes;
     hasWorkedEnough.current = finalTimeInMinutes >= 8 * MINUTES;
-    const finalFormated = convertMinutesToTimeString(finalTimeInMinutes);
-    setFinal(finalFormated);
-    localStorage.setItem(`todays_time_${todayDate}`, finalFormated);
+    const finalFormatted = convertMinutesToTimeString(finalTimeInMinutes);
+    // setFinal(finalFormatted);
+    localStorage.setItem(`todays_time_${todayDate}`, finalFormatted);
     localStorage.setItem('todays_time_last_edit', new Date().toString());
     if (todayWorked.current != null) {
       todayWorked.current.value = '';
     }
+
+    const newWorkday = {
+      ...workingDay,
+      stringDate: todayDate,
+      lastChange: new Date(),
+      workedMinutes: finalTimeInMinutes,
+    };
+    setWorkingDay(newWorkday);
+    const res = await setDoc(dayDoc(workingDay.id), {lastChange: new Date(),
+      workedMinutes: finalTimeInMinutes,},{ merge: true }); // change to update
+    console.log(res);
   };
 
   const tillNow = () => {
@@ -154,7 +267,7 @@ function App() {
           Last week - work times in the format <i>hh:mm</i>.
         </p>
         <div className="time">
-          {history
+          {weekHistory
             .sort((a, b) => (a.date > b.date ? 1 : -1))
             .map((day) => (
               <div className="time_item" key={day.id}>
@@ -175,7 +288,7 @@ function App() {
             <i
               className={hasWorkedEnough.current ? 'time_ok' : 'time_not_good'}
             >
-              {final}
+              {convertMinutesToTimeString(workingDay.workedMinutes ?? 0)}
             </i>
             <i className={weekOvertime >= 0 ? 'time_ok' : 'time_not_good'}>
               {`(${convertMinutesToTimeWithSign(weekOvertime)}) ${lastEdit}`}
@@ -197,7 +310,7 @@ function App() {
             <button type="submit">+</button>
           </form>
         </div>
-        <button onClick={() => setFinal('00:00')}>clear today</button>
+        {/* <button onClick={() => setFinal('00:00')}>clear today</button> */}
       </div>
     </>
   );
