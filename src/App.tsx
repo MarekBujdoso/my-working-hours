@@ -204,6 +204,7 @@ function App() {
   const todayWorked = React.useRef<HTMLInputElement>(null);
   // const finalInMinutes = workingDay.workedMinutes;
   const currentOvertime = weekOvertime + workingDay.workedMinutes - 8 * MINUTES;
+  const todayEnd = format(sub(workingDay.lastChange, {minutes: currentOvertime}), "H:mm");
 
   React.useEffect(() => {
     const func = async (): Promise<void> => {
@@ -291,6 +292,7 @@ function App() {
               {`(${convertMinutesToTimeWithSign(currentOvertime)}) ${lastEdit}`}
             </i>
           </div>
+          <div className="time_item top_border"><span>Finish at </span>{todayEnd}</div>
         </div>
         <button onClick={setNow}>set now</button>
         <div className="timer">
