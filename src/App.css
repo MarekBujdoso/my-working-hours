@@ -70,3 +70,10 @@
 .time .time_ok {
   color: lime;
 }
+
+.time_controls {
+  display: flex;
+  width: 300px;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}

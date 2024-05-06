@@ -74,6 +74,7 @@ button:focus-visible {
 .timer {
   display: flex;
   gap: 10px;
+  justify-content: center;
 }
 
 @media (prefers-color-scheme: light) {

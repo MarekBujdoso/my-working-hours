@@ -4,7 +4,9 @@ import { HistoryDay } from "../utils/types"
 
 const WeekHistory: React.FC<{weekHistory: HistoryDay[]}> = ({weekHistory}) => {
 
-  return weekHistory
+  return (
+    <div className="time">
+     {weekHistory
       .sort((a, b) => (a.date > b.date ? 1 : -1))
       .map((day) => (
         <div className="time_item" key={day.id}>
@@ -18,5 +20,8 @@ const WeekHistory: React.FC<{weekHistory: HistoryDay[]}> = ({weekHistory}) => {
           </i>
         </div>
       ))}
+    </div>
+  )
+}
 
 export default WeekHistory

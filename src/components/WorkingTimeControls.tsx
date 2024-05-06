@@ -8,7 +8,6 @@ import { WorkingDay } from "../utils/types";
 import Today from "./Today";
 import WorkingTimeForm from "./WorkingTimeForm";
 
-
 const WorkingTimeControls: React.FC<{todayDate: string, weekOvertime: number, user: User | null}> = ({todayDate, weekOvertime, user}) => {
   const [workingDay, setWorkingDay] = React.useState<WorkingDay>({
     stringDate: todayDate,
@@ -30,39 +29,37 @@ const WorkingTimeControls: React.FC<{todayDate: string, weekOvertime: number, us
     }
   }, [user]);
 
-  const saveWorkingTime = async (workedMinutes: number) => {
+  const updateWorkingDay = async (workingDay: WorkingDay) => {
+    setWorkingDay(workingDay);
+    updateDay(workingDay.id, {lastChange: new Date(), workedMinutes: workingDay.workedMinutes});
+  }
+
+  const saveWorkingTime = (workedMinutes: number) => {
     const finalTimeInMinutes = workingDay.workedMinutes + workedMinutes;
-
-    const newWorkday = {
-      ...workingDay,
-      stringDate: todayDate,
-      lastChange: new Date(),
-      workedMinutes: finalTimeInMinutes,
-    };
-    setWorkingDay(newWorkday);
-    updateDay(workingDay.id, {lastChange: new Date(),
-        workedMinutes: finalTimeInMinutes});
+    updateWorkingDay({...workingDay, lastChange: new Date(), workedMinutes: finalTimeInMinutes});
   };
 
-  const setNow = () => {
-    const { id, workedMinutes } = workingDay;
-    updateDay(id, {lastChange: new Date(), workedMinutes});
-    setWorkingDay({...workingDay, lastChange: new Date()});
-  };
+  const clearToday = React.useCallback(() => {
+    updateWorkingDay({...workingDay, lastChange: new Date(), workedMinutes: 0})
+  }, [workingDay])
+
+
+  const fromNow = React.useCallback(() => {
+    updateWorkingDay({...workingDay, lastChange: new Date()});
+  }, [workingDay]);
 
   return (
-    <div className="time">
-      <Today workingDay={workingDay} currentOvertime={currentOvertime} />
-      <div className="time_item top_border"><span>Finish at </span>{todayEnd}</div>
-      <button onClick={setNow}>set now</button>
-        <div className="timer">
-          <WorkingTimeForm lastChange={workingDay.lastChange} saveWorkingTime={saveWorkingTime} />
-        </div>
-        <button onClick={() => {
-          updateDay(workingDay.id, { lastChange: new Date(), workedMinutes: 0})
-          setWorkingDay({...workingDay, workedMinutes: 0})
-        }}>clear today</button>
-    </div>
+    <>
+      <div className="time">
+        <Today workingDay={workingDay} currentOvertime={currentOvertime} />
+        <div className="time_item top_border"><span>Finish at </span>{todayEnd}</div>
+      </div>
+      <div className="time_controls">
+        <button onClick={fromNow}>from now</button>
+        <WorkingTimeForm lastChange={workingDay.lastChange} saveWorkingTime={saveWorkingTime} />
+        <button onClick={clearToday}>clear today</button>
+      </div>
+    </>
   )
   
 }

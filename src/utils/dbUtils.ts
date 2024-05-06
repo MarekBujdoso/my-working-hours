@@ -3,7 +3,7 @@ import { formatISO } from "date-fns/formatISO";
 import { sub } from "date-fns/sub";
 import { initializeApp } from "firebase/app";
 import { getAuth, User } from "firebase/auth";
-import { addDoc, and, collection, doc, Firestore, getDocs, getFirestore, query, setDoc, where } from "firebase/firestore/lite";
+import { addDoc, and, collection, doc, getDocs, getFirestore, query, setDoc, where } from "firebase/firestore/lite";
 import { convertMinutesToTimeString, MINUTES } from "./conversions";
 import { HistoryDay, WorkedTime, WorkingDay, WorkingDayDB } from "./types";
 

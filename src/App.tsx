@@ -96,9 +96,7 @@ function App() {
       <p>
         Last week - work times in the format <i>hh:mm</i>.
       </p>
-      <div className="time">
-        <WeekHistory weekHistory={weekHistory} />
-      </div>
+      <WeekHistory weekHistory={weekHistory} />
       <WorkingTimeControls todayDate={todayDate} weekOvertime={weekOvertime} user={user} />
     </div>
   );
