@@ -54,6 +54,10 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
+button.small_button {
+  padding: 0 0;
+}
+
 .time_input {
   border-radius: 8px;
   border: 1px solid transparent;
@@ -64,7 +68,7 @@ button:focus-visible {
   background-color: #1a1a1a;
   transition: border-color 0.25s;
   text-align: center;
-  width: 100px;
+  flex-grow: 1;
 }
 
 .time_input:hover {
@@ -73,7 +77,7 @@ button:focus-visible {
 
 .timer {
   display: flex;
-  gap: 10px;
+  gap: 5px;
   justify-content: center;
 }
 

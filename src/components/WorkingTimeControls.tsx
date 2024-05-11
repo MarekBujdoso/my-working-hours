@@ -50,14 +50,10 @@ const WorkingTimeControls: React.FC<{todayDate: string, weekOvertime: number, us
 
   return (
     <>
-      <div className="time">
-        <Today workingDay={workingDay} currentOvertime={currentOvertime} />
-        <div className="time_item top_border"><span>Finish at </span>{todayEnd}</div>
-      </div>
+      <Today workingDay={workingDay} currentOvertime={currentOvertime} clearToday={clearToday} todayEnd={todayEnd} />
       <div className="time_controls">
         <button onClick={fromNow}>from now</button>
         <WorkingTimeForm lastChange={workingDay.lastChange} saveWorkingTime={saveWorkingTime} />
-        <button onClick={clearToday}>clear today</button>
       </div>
     </>
   )

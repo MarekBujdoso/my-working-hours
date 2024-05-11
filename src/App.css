@@ -46,8 +46,19 @@
 }
 
 .top_border {
+  display: flex;
   border-top: 2px solid gray;
   margin-top: 5px;
+  gap: 5px;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.left_column {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 5px;
 }
 
 .time {
@@ -55,12 +66,14 @@
   flex-direction: column;
   font-weight: 400;
   font-size: medium;
+  width: 250px;
 }
 
 .time_item {
   display: flex;
   gap: 10px;
   align-items: flex-start;
+  justify-content: space-between;
 }
 
 .time .time_not_good {
@@ -73,7 +86,9 @@
 
 .time_controls {
   display: flex;
-  width: 300px;
+  width: 250px;
   flex-wrap: wrap;
   justify-content: space-between;
+  flex-direction: column;
+  gap: 5px;
 }

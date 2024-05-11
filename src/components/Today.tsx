@@ -3,19 +3,28 @@ import { convertMinutesToTimeString, convertMinutesToTimeWithSign, MINUTES } fro
 import { WorkingDay } from "../utils/types"
 
 
-const Today: React.FC<{workingDay: WorkingDay, currentOvertime: number}> = ({workingDay, currentOvertime}) => {
+const Today: React.FC<{workingDay: WorkingDay, currentOvertime: number, clearToday: () => void, todayEnd: string}> = (
+  {workingDay, currentOvertime, clearToday, todayEnd}) => {
   const lastEdit = format(workingDay.lastChange, " 'at' H:mm")
   return (
-    <div className="time_item top_border">
-      Today:{' '}
-      <i
-        className={workingDay.workedMinutes >= MINUTES * 8 ? 'time_ok' : 'time_not_good'}
-      >
-        {convertMinutesToTimeString(workingDay.workedMinutes)}
-      </i>
-      <i className={currentOvertime >= 0 ? 'time_ok' : 'time_not_good'}>
-        {`(${convertMinutesToTimeWithSign(currentOvertime)}) ${lastEdit}`}
-      </i>
+    <div className="time">
+      <div className="top_border">
+        <div className="left_column">
+          <div>Today{lastEdit}</div>
+          <div>
+            <i
+              className={workingDay.workedMinutes >= MINUTES * 8 ? 'time_ok' : 'time_not_good'}
+            >
+              {convertMinutesToTimeString(workingDay.workedMinutes)}
+            </i>
+            <i className={currentOvertime >= 0 ? 'time_ok' : 'time_not_good'}>
+              {` (${convertMinutesToTimeWithSign(currentOvertime)})`}
+            </i>
+          </div>
+          <div><span>Finish at </span>{todayEnd}</div>
+        </div>
+        <button onClick={clearToday}>x</button>
+      </div>
     </div>
   )
 }
