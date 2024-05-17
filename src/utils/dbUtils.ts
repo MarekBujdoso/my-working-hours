@@ -34,7 +34,6 @@ export async function getToday(user: User): Promise<WorkingDay> {
   const todaySnapshot = daySnapshot.docs.find((doc) => doc.data().stringDate === stringToday);
   const today = todaySnapshot?.data() as WorkingDayDB | undefined;
   const todayId = todaySnapshot?.id;
-  console.log(todayId);
   if (today && todayId) {
     return {
       ...today,
@@ -50,7 +49,6 @@ export async function getToday(user: User): Promise<WorkingDay> {
     };
     
     const docRef = await addDoc(daysCol, newWorkday);
-    console.log(docRef.id);
     return {...newWorkday, id: docRef.id};
   }
 }

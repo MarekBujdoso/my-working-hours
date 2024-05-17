@@ -15,17 +15,18 @@ const WorkingTimeControls: React.FC<{todayDate: string, weekOvertime: number, us
     workedMinutes: 0,
     id: 'empty'
   });
+  const isEffectRunning = React.useRef(false);
   const currentOvertime = weekOvertime + workingDay.workedMinutes - 8 * MINUTES;
   const todayEnd = format(sub(workingDay.lastChange, {minutes: currentOvertime}), "H:mm");
 
   React.useEffect(() => {
     const func = async (user: User): Promise<void> => {
     const workDay = await getToday(user);
-    console.log("todayData", workDay);
     setWorkingDay(workDay);
     }
-    if (user !== null) {
+    if (isEffectRunning.current === false && user !== null) {
       void func(user);
+      isEffectRunning.current = true;
     }
   }, [user]);
 
