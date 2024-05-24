@@ -5,6 +5,7 @@ import WeekHistory from './components/WeekHistory';
 import WorkingTimeControls from './components/WorkingTimeControls';
 import { auth, formatISODate, getWeekHistoryFrom } from './utils/dbUtils';
 import { HistoryDay } from './utils/types';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './components/ui/card';
 // import { useAuthState } from 'react-firebase-hooks/auth';
 
 
@@ -83,24 +84,27 @@ function App() {
   
   if (user === null) {
     return (
-      <div className="card">
+      <Card className="card">
         <form onSubmit={signIn}>
           <input type="email" placeholder="email" name="user_email" />
           <input type="password" placeholder="password" name="user_password" />
           <button>Sign in</button>
         </form>
-      </div>
+      </Card>
     );
   }
 
   return (
-    <div className="card">
-      <p>
-        Last week - work times in the format <i>hh:mm</i>.
-      </p>
-      <WeekHistory weekHistory={weekHistory} />
-      <WorkingTimeControls todayDate={todayDate} weekOvertime={weekOvertime} user={user} />
-    </div>
+    <Card className="bg-red shadow-md flex flex-col items-center">
+      <CardHeader>
+        <CardTitle>Working hours</CardTitle>
+        <CardDescription>Last week - work times in the format <i>hh:mm</i></CardDescription>
+      </CardHeader>
+      <CardContent>
+        <WeekHistory weekHistory={weekHistory} />
+        <WorkingTimeControls todayDate={todayDate} weekOvertime={weekOvertime} user={user} />
+      </CardContent>
+    </Card>
   );
 }
 

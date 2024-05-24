@@ -1,6 +1,7 @@
 import { format } from "date-fns/format"
 import { convertMinutesToTimeString, convertMinutesToTimeWithSign, MINUTES } from "../utils/conversions"
 import { WorkingDay } from "../utils/types"
+import { Button } from "./ui/button"
 
 
 const Today: React.FC<{workingDay: WorkingDay, currentOvertime: number, clearToday: () => void, todayEnd: string}> = (
@@ -23,7 +24,7 @@ const Today: React.FC<{workingDay: WorkingDay, currentOvertime: number, clearTod
           </div>
           <div><span>Finish at </span>{todayEnd}</div>
         </div>
-        <button onClick={clearToday}>x</button>
+        <Button onClick={clearToday}>x</Button>
       </div>
     </div>
   )
