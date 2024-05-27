@@ -11,7 +11,7 @@ const WeekHistory: React.FC<{weekHistory: HistoryDay[]}> = ({weekHistory}) => {
       .map((day) => (
         <div className="time_item" key={day.id}>
           {day.date}:{' '}
-          <i className={day.overtime >= 0 ? 'time_ok' : 'time_not_good'}>
+          <i className={day.overtime >= 0 ? 'text-green-400' : 'text-orange-600'}>
             {day.time
               ? `${day.time} (${convertMinutesToTimeWithSign(
                   day.overtime

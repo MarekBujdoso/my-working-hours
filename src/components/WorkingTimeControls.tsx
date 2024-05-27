@@ -7,6 +7,7 @@ import { getToday, updateDay } from "../utils/dbUtils";
 import { WorkingDay } from "../utils/types";
 import Today from "./Today";
 import WorkingTimeForm from "./WorkingTimeForm";
+import { Button } from "./ui/button";
 
 const WorkingTimeControls: React.FC<{todayDate: string, weekOvertime: number, user: User | null}> = ({todayDate, weekOvertime, user}) => {
   const [workingDay, setWorkingDay] = React.useState<WorkingDay>({
@@ -53,7 +54,7 @@ const WorkingTimeControls: React.FC<{todayDate: string, weekOvertime: number, us
     <>
       <Today workingDay={workingDay} currentOvertime={currentOvertime} clearToday={clearToday} todayEnd={todayEnd} />
       <div className="time_controls">
-        <button onClick={fromNow}>from now</button>
+        <Button variant="outline" className="text-lg" onClick={fromNow}>from now</Button>
         <WorkingTimeForm lastChange={workingDay.lastChange} saveWorkingTime={saveWorkingTime} />
       </div>
     </>

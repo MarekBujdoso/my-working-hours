@@ -76,13 +76,13 @@
   justify-content: space-between;
 }
 
-.time .time_not_good {
+/* .time .time_not_good {
   color: red;
 }
 
 .time .time_ok {
   color: lime;
-}
+} */
 
 .time_controls {
   display: flex;

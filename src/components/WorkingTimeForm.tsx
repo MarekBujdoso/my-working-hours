@@ -1,6 +1,8 @@
 import { differenceInMinutes } from "date-fns";
 import React from "react";
 import { convertMinutesToTimeString, getMinutesFromTimeString } from "../utils/conversions";
+import { Button } from "./ui/button";
+import { Input } from "./ui/input";
 
 
 const WorkingTimeForm: React.FC<{lastChange: Date, saveWorkingTime: (time: number) => void}> = ({lastChange, saveWorkingTime}) => {
@@ -21,20 +23,21 @@ const WorkingTimeForm: React.FC<{lastChange: Date, saveWorkingTime: (time: numbe
 
   return (
     <>
-    <button onClick={tillNow}>till now</button>
+    <Button variant="outline" className="text-lg" onClick={tillNow}>till now</Button>
       
     <form style={{width: "100%"}} onSubmit={parseTimeFromString}>
       <div className="timer">
-        <input
+        <Input
+          className="dark:bg-slate-800"
           value={worked}
           name="working_time"
-          className="time_input"
+          // className="time_input"
           placeholder="hh:mm"
           onChange={(e) => setWorked(e.target.value)}
           pattern=""
           type="time"
         />
-        <button type="submit">+</button>
+        <Button className="text-lg" type="submit">+</Button>
       </div>
     </form>
     </>
