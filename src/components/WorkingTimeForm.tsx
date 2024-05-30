@@ -23,23 +23,22 @@ const WorkingTimeForm: React.FC<{lastChange: Date, saveWorkingTime: (time: numbe
 
   return (
     <>
-    <Button variant="outline" className="text-lg" onClick={tillNow}>till now</Button>
-      
-    <form style={{width: "100%"}} onSubmit={parseTimeFromString}>
-      <div className="timer">
-        <Input
-          className="dark:bg-slate-800"
-          value={worked}
-          name="working_time"
-          // className="time_input"
-          placeholder="hh:mm"
-          onChange={(e) => setWorked(e.target.value)}
-          pattern=""
-          type="time"
-        />
-        <Button className="text-lg" type="submit">+</Button>
-      </div>
-    </form>
+      <Button variant="outline" className="text-lg h-12" onClick={tillNow}>till now</Button> 
+      <form style={{width: "100%"}} onSubmit={parseTimeFromString}>
+        <div className="flex gap-1 justify-center">
+          <Input
+            className="dark:bg-slate-800 text-lg h-12"
+            value={worked}
+            name="working_time"
+            // className="time_input"
+            placeholder="hh:mm"
+            onChange={(e) => setWorked(e.target.value)}
+            pattern=""
+            type="time"
+          />
+          <Button className="text-lg w-1/3 h-12" type="submit">+</Button>
+        </div>
+      </form>
     </>
   )
 }

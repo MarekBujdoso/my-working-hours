@@ -95,16 +95,18 @@ function App() {
   }
 
   return (
-    <Card className="bg-red shadow-md flex flex-col items-center">
-      <CardHeader>
-        <CardTitle>Working hours</CardTitle>
-        <CardDescription>Last week - work times in the format <i>hh:mm</i></CardDescription>
-      </CardHeader>
-      <CardContent>
-        <WeekHistory weekHistory={weekHistory} />
-        <WorkingTimeControls todayDate={todayDate} weekOvertime={weekOvertime} user={user} />
-      </CardContent>
-    </Card>
+    <>
+      <WorkingTimeControls todayDate={todayDate} weekOvertime={weekOvertime} user={user} />
+      <Card className="bg-red shadow-md flex flex-col items-center">
+        <CardHeader>
+          <CardTitle>Working hours</CardTitle>
+          <CardDescription>This week - work times in the format <i>hh:mm</i></CardDescription>
+        </CardHeader>
+        <CardContent className='w-full'>
+          <WeekHistory weekHistory={weekHistory} />
+        </CardContent>
+      </Card>
+    </>
   );
 }
 

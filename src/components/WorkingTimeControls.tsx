@@ -8,6 +8,7 @@ import { WorkingDay } from "../utils/types";
 import Today from "./Today";
 import WorkingTimeForm from "./WorkingTimeForm";
 import { Button } from "./ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 
 const WorkingTimeControls: React.FC<{todayDate: string, weekOvertime: number, user: User | null}> = ({todayDate, weekOvertime, user}) => {
   const [workingDay, setWorkingDay] = React.useState<WorkingDay>({
@@ -50,14 +51,24 @@ const WorkingTimeControls: React.FC<{todayDate: string, weekOvertime: number, us
     updateWorkingDay({...workingDay, lastChange: new Date()});
   }, [workingDay]);
 
+  const lastEdit = format(workingDay.lastChange, " 'at' H:mm")
+
   return (
-    <>
-      <Today workingDay={workingDay} currentOvertime={currentOvertime} clearToday={clearToday} todayEnd={todayEnd} />
-      <div className="time_controls">
-        <Button variant="outline" className="text-lg" onClick={fromNow}>from now</Button>
+    <Card className="bg-red shadow-md flex flex-col items-center">
+      <CardHeader className="w-full">
+        <CardTitle className="flex justify-between items-center ">
+          <div>Today <span className="text-slate-400 text-lg">{lastEdit}</span></div>
+          <Button variant="destructive" className="text-lg h-12" onClick={clearToday}>clear</Button>
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="w-full">
+      <Today workingDay={workingDay} currentOvertime={currentOvertime} todayEnd={todayEnd} />
+      <div className="flex flex-col justify-between gap-1">
+        <Button variant="outline" className="text-lg h-12" onClick={fromNow}>from now</Button>
         <WorkingTimeForm lastChange={workingDay.lastChange} saveWorkingTime={saveWorkingTime} />
       </div>
-    </>
+      </CardContent>
+    </Card>
   )
   
 }

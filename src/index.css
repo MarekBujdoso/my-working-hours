@@ -152,11 +152,11 @@ button.small_button {
   border-color: #646cff;
 }
 
-.timer {
+/* .timer {
   display: flex;
   gap: 5px;
   justify-content: center;
-}
+} */
 
 @media (prefers-color-scheme: light) {
   :root {
