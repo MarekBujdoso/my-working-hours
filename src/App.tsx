@@ -96,7 +96,6 @@ function App() {
 
   return (
     <>
-      <WorkingTimeControls todayDate={todayDate} weekOvertime={weekOvertime} user={user} />
       <Card className="bg-red shadow-md flex flex-col items-center">
         <CardHeader>
           <CardTitle>Working hours</CardTitle>
@@ -106,6 +105,7 @@ function App() {
           <WeekHistory weekHistory={weekHistory} />
         </CardContent>
       </Card>
+      <WorkingTimeControls todayDate={todayDate} weekOvertime={weekOvertime} user={user} />
     </>
   );
 }

@@ -58,7 +58,7 @@ const WorkingTimeControls: React.FC<{todayDate: string, weekOvertime: number, us
       <CardHeader className="w-full">
         <CardTitle className="flex justify-between items-center ">
           <div>Today <span className="text-slate-400 text-lg">{lastEdit}</span></div>
-          <Button variant="destructive" className="text-lg h-12" onClick={clearToday}>clear</Button>
+          <Button variant="outline" className="text-lg h-12" onClick={clearToday}>clear</Button>
         </CardTitle>
       </CardHeader>
       <CardContent className="w-full">

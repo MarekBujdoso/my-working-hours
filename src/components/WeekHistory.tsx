@@ -5,7 +5,7 @@ import { HistoryDay } from "../utils/types"
 const WeekHistory: React.FC<{weekHistory: HistoryDay[]}> = ({weekHistory}) => {
 
   return (
-    <div className="w-full flex flex-col font-weight-400 font-size-lg">
+    <div className="w-full flex flex-col font-weight-400 font-size-lg h-24">
      {weekHistory
       .sort((a, b) => (a.date > b.date ? 1 : -1))
       .map((day) => (

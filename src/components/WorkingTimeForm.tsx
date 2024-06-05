@@ -27,7 +27,7 @@ const WorkingTimeForm: React.FC<{lastChange: Date, saveWorkingTime: (time: numbe
       <form style={{width: "100%"}} onSubmit={parseTimeFromString}>
         <div className="flex gap-1 justify-center">
           <Input
-            className="dark:bg-slate-800 text-lg h-12"
+            className="dark:bg-slate-800 justify-center text-lg h-12 text-center rounded-lg hover:border-[#646cff] hover:bg-slate-100 transition:border-color duration-300"
             value={worked}
             name="working_time"
             // className="time_input"
@@ -36,7 +36,7 @@ const WorkingTimeForm: React.FC<{lastChange: Date, saveWorkingTime: (time: numbe
             pattern=""
             type="time"
           />
-          <Button className="text-lg w-1/3 h-12" type="submit">+</Button>
+          <Button className="text-lg w-1/3 h-12" variant="outline" type="submit">+</Button>
         </div>
       </form>
     </>

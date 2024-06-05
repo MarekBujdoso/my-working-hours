@@ -135,7 +135,7 @@ button.small_button {
   padding: 0 0;
 }
 
-.time_input {
+/* .time_input {
   border-radius: 8px;
   border: 1px solid transparent;
   padding: 0.6em 1.2em;
@@ -150,7 +150,7 @@ button.small_button {
 
 .time_input:hover {
   border-color: #646cff;
-}
+} */
 
 /* .timer {
   display: flex;
