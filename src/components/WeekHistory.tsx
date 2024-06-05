@@ -5,13 +5,13 @@ import { HistoryDay } from "../utils/types"
 const WeekHistory: React.FC<{weekHistory: HistoryDay[]}> = ({weekHistory}) => {
 
   return (
-    <div className="time">
+    <div className="w-full flex flex-col font-weight-400 font-size-lg h-24">
      {weekHistory
       .sort((a, b) => (a.date > b.date ? 1 : -1))
       .map((day) => (
-        <div className="time_item" key={day.id}>
+        <div className="flex gap-2 justify-between items-start" key={day.id}>
           {day.date}:{' '}
-          <i className={day.overtime >= 0 ? 'time_ok' : 'time_not_good'}>
+          <i className={day.overtime >= 0 ? 'text-green-400' : 'text-orange-600'}>
             {day.time
               ? `${day.time} (${convertMinutesToTimeWithSign(
                   day.overtime

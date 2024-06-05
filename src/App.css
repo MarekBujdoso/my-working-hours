@@ -5,7 +5,7 @@
   text-align: center;
 }
 
-.logo {
+/* .logo {
   height: 6em;
   padding: 1.5em;
   will-change: filter;
@@ -25,70 +25,70 @@
   to {
     transform: rotate(360deg);
   }
-}
+} */
 
-@media (prefers-reduced-motion: no-preference) {
+/* @media (prefers-reduced-motion: no-preference) {
   a:nth-of-type(2) .logo {
     animation: logo-spin infinite 20s linear;
   }
-}
+} */
 
-.card {
+/* .card {
   padding: 2em;
   display: flex;
   align-items: center;
   flex-direction: column;
   gap: 10px;
-}
+} */
 
-.read-the-docs {
+/* .read-the-docs {
   color: #888;
-}
+} */
 
-.top_border {
+/* .top_border {
   display: flex;
   border-top: 2px solid gray;
   margin-top: 5px;
   gap: 5px;
   justify-content: space-between;
   align-items: center;
-}
+} */
 
-.left_column {
+/* .left_column {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   gap: 5px;
-}
+} */
 
-.time {
+/* .time {
   display: flex;
   flex-direction: column;
   font-weight: 400;
   font-size: medium;
   width: 250px;
-}
+} */
 
-.time_item {
+/* .time_item {
   display: flex;
   gap: 10px;
   align-items: flex-start;
   justify-content: space-between;
-}
+} */
 
-.time .time_not_good {
+/* .time .time_not_good {
   color: red;
 }
 
 .time .time_ok {
   color: lime;
-}
+} */
 
-.time_controls {
+/* .time_controls {
   display: flex;
   width: 250px;
   flex-wrap: wrap;
   justify-content: space-between;
   flex-direction: column;
   gap: 5px;
-}
+} */
